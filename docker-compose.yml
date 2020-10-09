@@ -1,0 +1,57 @@
+version: '3.1'
+services:
+
+  app_mng:
+    build:
+      # context: ./app
+      context: ./app_mng
+      dockerfile: Dockerfile
+    image: ywemay/coco-containers-mng
+    container_name: coco-containers-mng
+    ports:
+      - 9528:9528
+    volumes:
+      - ./app_mng:/home/node/app
+    # command: "npm run dev"
+    # command: "http-server dist"
+    links:
+      - cocoapi
+    environment:
+      API_LINK: 'http://cocoapi:8086'
+
+  cocophpapi:
+    build:
+      context: ./phpapi
+      dockerfile: Dockerfile
+    image: ywemay/coco-containers-phpapi
+    container_name: coco-containers-phpapi
+    ports:
+      - 8086:80
+    volumes:
+      - ./api:/home/node/app
+    links:
+      - cocomysql
+    environment:
+      DB_LINK: 'mysql://cococtnr:cocopass@cocomysql:27017/coco'
+      JWT_KEY: "anJWTTokenSoThatCanEncrypt"
+
+  cocomysql:
+    image: mysql:5.7
+    restart: always
+    container_name: coco-containers-mysql
+    environment:
+      MYSQL_DATABASE: 'coco'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'cococtnr'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'cocopass'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'superpass'
+    volumes:
+      - my-db:/var/lib/mysql
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - 23306:3306
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
