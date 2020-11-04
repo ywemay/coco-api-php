@@ -1,38 +1,21 @@
 version: '3.1'
 services:
 
-  app_mng:
-    build:
-      # context: ./app
-      context: ./app_mng
-      dockerfile: Dockerfile
-    image: ywemay/coco-containers-mng
-    container_name: coco-containers-mng
-    ports:
-      - 9528:9528
-    volumes:
-      - ./app_mng:/home/node/app
-    # command: "npm run dev"
-    # command: "http-server dist"
-    links:
-      - cocoapi
-    environment:
-      API_LINK: 'http://cocoapi:8086'
-
   cocophpapi:
     build:
-      context: ./phpapi
+      context: .
       dockerfile: Dockerfile
     image: ywemay/coco-containers-phpapi
     container_name: coco-containers-phpapi
     ports:
       - 8086:80
     volumes:
-      - ./api:/home/node/app
+      - ./public:/var/www/html
+      - ./src:/var/www/src
     links:
       - cocomysql
     environment:
-      DB_LINK: 'mysql://cococtnr:cocopass@cocomysql:27017/coco'
+      DB_LINK: 'mysql://cococtnr:cocopass@cocomysql:3306/coco'
       JWT_KEY: "anJWTTokenSoThatCanEncrypt"
 
   cocomysql:
@@ -48,10 +31,15 @@ services:
       # Password for root access
       MYSQL_ROOT_PASSWORD: 'superpass'
     volumes:
-      - my-db:/var/lib/mysql
+      - ./my-db:/var/lib/mysql
     ports:
       # <Port exposed> : < MySQL Port running inside container>
       - 23306:3306
     expose:
       # Opens port 3306 on the container
       - '3306'
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080

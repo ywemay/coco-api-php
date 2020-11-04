@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('../config.php');
+include('../src/config.php');
 
 global $Req, $Resp;
 $Req = new Request();

@@ -43,4 +43,16 @@ function check_access_by_roles($roles) {
     die();
   }
 }
- ?>
+
+function Req() {
+  global $Req;
+  if (!$Req) $Req = new Request();
+  return $Req;
+}
+
+function Resp() {
+  global $Resp;
+  if (!$Resp) $Resp = new Response();
+  return $Resp;
+}
+?>
